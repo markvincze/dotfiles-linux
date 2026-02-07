@@ -105,6 +105,7 @@ source $ZSH/oh-my-zsh.sh
 
 alias zshc="nvim ~/.zshrc"
 alias swayc="nvim ~/.config/sway/config"
+#alias ls="ls -l -a"
 
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:~/go/bin

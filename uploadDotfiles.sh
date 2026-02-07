@@ -7,7 +7,7 @@ echo "Copying configs"
 cp -f -r ~/.config/ghostty ./.config/
 cp -f -r ~/.config/sway ./.config/
 cp -f -r ~/.config/nvim ./.config/
-cp ~/.zshrc 
+cp ~/.zshrc .
 
 git add .
 git commit --allow-empty -m "Update config"

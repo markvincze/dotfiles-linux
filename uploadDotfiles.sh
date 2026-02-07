@@ -10,5 +10,5 @@ cp -f -r ~/.config/nvim ./.config/
 cp ~/.zshrc 
 
 git add .
-git commit -m "Update config"
+git commit --allow-empty -m "Update config"
 git push origin main

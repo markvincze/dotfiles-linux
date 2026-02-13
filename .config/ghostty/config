@@ -48,10 +48,10 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
-theme = TokyoNight
+theme = Night Owl
+#theme = Night Owlish Light
+working-directory = ~/Workspaces
+background-opacity = 0.85
+background-blur = 20
 cursor-style = block
-cursor-style-blink = true
 shell-integration-features = no-cursor
-#font-family = "CaskaydiaCove Nerd Font"
-font-family = "JetBrainsMono Nerd Font"
-

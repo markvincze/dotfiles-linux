@@ -1,4 +1,8 @@
 echo "Creating folders"
+rm -rf .config/ghostty
+rm -rf .config/sway
+rm -rf .config/nvim
+
 mkdir -p .config/ghostty
 mkdir -p .config/sway
 mkdir -p .config/nvim

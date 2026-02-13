@@ -70,7 +70,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git kubectl docker golang python ssh node)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -119,21 +119,34 @@ zle -N hstr_no_tiocsti
 bindkey '\C-r' hstr_no_tiocsti
 export HSTR_TIOCSTI=n
 
+alias zshc="nvim ~/.zshrc"
+alias swayc="nvim ~/.config/sway/config"
+alias ghosttyc="nvim ~/.config/ghostty/config"
+alias sshpc="ssh mark@192.168.0.4"
+alias dpss="docker ps --format \"table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.State}}\""
+alias k=kubectl
+alias wolpc="wol 70:85:c2:6f:ab:63"
+#alias nvimc="nvim ~/.config/nvim/init.lua"
+alias nvimc='nvim -c "cd ~/.config/nvim" ~/.config/nvim/init.lua'
+alias cdp="cd ~/Workspaces/GitLab/refurbed/platform"
+
 # Make ctrl+backspace delete a hole word
 bindkey '^H' backward-kill-word
+
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:~/go/bin
+export PATH=$PATH:~/Tools
+export PATH=$PATH:~/Tools/protoc/bin
+export PATH=$PATH:~/Tools/golangci-lint/bin
+export PLAN9=/home/mark/Workspaces/GitHub/9fans/plan9port
+export PATH=$PATH:$PLAN9/bin
+
+export GOPRIVATE=gitlab.com/refurbed/engineering/*
+export GONOSUMDB=gitlab.com/refurbed/engineering/*
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# Fetch the Refurbed go modules with bypassing the Go mirror.
-export GOPRIVATE=gitlab.com/refurbed/engineering/*
-export GONOSUMDB=gitlab.com/refurbed/engineering/*
-
-export PATH=$PATH:~/Tools
-export PATH=$PATH:~/Tools/protoc/bin
-export PATH=$PATH:~/go/bin
-export PATH=$PATH:~/.local/bin
 
 [ -z "$SSH_AGENT_PID" ] &&
 export SSH_AGENT_PID=$(ps ux | grep -w ssh-agent | grep -vwE 'defunct|grep' | grep -wm1 "$SSH_AUTH_SOCK" | awk '{print $2}')
@@ -145,14 +158,35 @@ export SSH_AUTH_SOCK=$( (ps "$SSH_AGENT_PID" | grep -w -- '-a' | sed "s/.* -a //
 eval $(ssh-agent $([ -n "$SSH_AUTH_SOCK" ] && rm -f "$SSH_AUTH_SOCK" && echo -n "-a $SSH_AUTH_SOCK") -s) 1> /dev/null
 
 ssh-add ~/.ssh/id_ed25519 2>/dev/null
+#
+### Change terminal background color whether in active SSH session or not
+# Function to set background
+function set_bg() {
+    printf "\033]11;%s\007" "$1"
+}
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/mark/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/path.zsh.inc'; fi
+# Function to get current background (if supported)
+function get_bg() {
+    # Use default fallback if detection fails
+    echo "${CURRENT_BG:-#1e1e2e}"
+}
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc'; fi
+# Wrapper for ssh
+function ssh() {
+    # Save current background dynamically
+    DEFAULT_BG="#011627"
+    CURRENT_BG="$DEFAULT_BG"  # fallback in case detection fails
 
-alias dpss="docker ps --format \"table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.State}}\""
-alias zshc="nvim ~/.zshrc"
-alias swayc="nvim ~/.config/sway/config"
-alias k=kubectl
+    # Try to read current background via escape sequence
+    # Some terminals (like Terminator) may not report it, so fallback is used
+    # You could manually override DEFAULT_BG if you know your usual color
+
+    # Change to SSH background
+    set_bg "#330000"
+
+    # Run actual ssh
+    command ssh "$@"
+
+    # Restore original background
+    set_bg "$(get_bg)"
+}

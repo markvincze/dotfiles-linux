@@ -50,8 +50,11 @@
 
 theme = Night Owl
 #theme = Night Owlish Light
+
 working-directory = ~/Workspaces
 background-opacity = 0.85
 background-blur = 20
 cursor-style = block
 shell-integration-features = no-cursor
+keybind = performable:ctrl+c=copy_to_clipboard
+keybind = ctrl+v=paste_from_clipboard  

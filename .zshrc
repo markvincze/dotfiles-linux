@@ -103,19 +103,56 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-alias zshc="nvim ~/.zshrc"
-alias swayc="nvim ~/.config/sway/config"
-#alias ls="ls -l -a"
+# HSTR configuration - add this to ~/.zshrc
+alias hh=hstr                    # hh to be alias for hstr
+setopt histignorespace           # skip cmds w/ leading space from history
+export HSTR_CONFIG=hicolor       # get more colors
+export HSTR_CONFIG=raw-history-view
+hstr_no_tiocsti() {
+    zle -I
+    { HSTR_OUT="$( { </dev/tty hstr ${BUFFER}; } 2>&1 1>&3 3>&- )"; } 3>&1;
+    BUFFER="${HSTR_OUT}"
+    CURSOR=${#BUFFER}
+    zle redisplay
+}
+zle -N hstr_no_tiocsti
+bindkey '\C-r' hstr_no_tiocsti
+export HSTR_TIOCSTI=n
 
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:~/go/bin
-export PATH=$PATH:~/Tools
-export PATH=$PATH:~/Tools/protoc/bin
-export PATH=$PATH:~/Tools/golangci-lint/bin
-
-export GOPRIVATE=gitlab.com/refurbed/engineering/*
-export GONOSUMDB=gitlab.com/refurbed/engineering/*
+# Make ctrl+backspace delete a hole word
+bindkey '^H' backward-kill-word
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Fetch the Refurbed go modules with bypassing the Go mirror.
+export GOPRIVATE=gitlab.com/refurbed/engineering/*
+export GONOSUMDB=gitlab.com/refurbed/engineering/*
+
+export PATH=$PATH:~/Tools
+export PATH=$PATH:~/Tools/protoc/bin
+export PATH=$PATH:~/go/bin
+export PATH=$PATH:~/.local/bin
+
+[ -z "$SSH_AGENT_PID" ] &&
+export SSH_AGENT_PID=$(ps ux | grep -w ssh-agent | grep -vwE 'defunct|grep' | grep -wm1 "$SSH_AUTH_SOCK" | awk '{print $2}')
+
+[ -n "$SSH_AGENT_PID" ] && [ -z "$SSH_AUTH_SOCK" ] &&
+export SSH_AUTH_SOCK=$( (ps "$SSH_AGENT_PID" | grep -w -- '-a' | sed "s/.* -a //;s/ .*//" | grep -- /) || (find /tmp/ssh-* -name \*$(($SSH_AGENT_PID-1)) -o -name \*$(($SSH_AGENT_PID-2)) -type s 2> /dev/null) )
+
+( [ -z "$SSH_AGENT_PID" ] || [ -z "$SSH_AUTH_SOCK" ] ) &&
+eval $(ssh-agent $([ -n "$SSH_AUTH_SOCK" ] && rm -f "$SSH_AUTH_SOCK" && echo -n "-a $SSH_AUTH_SOCK") -s) 1> /dev/null
+
+ssh-add ~/.ssh/id_ed25519 2>/dev/null
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/mark/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc'; fi
+
+alias dpss="docker ps --format \"table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.State}}\""
+alias zshc="nvim ~/.zshrc"
+alias swayc="nvim ~/.config/sway/config"
+alias k=kubectl

@@ -7,6 +7,7 @@ echo "Copying configs"
 cp -f -r ~/.config/ghostty ./.config/
 cp -f -r ~/.config/sway ./.config/
 cp -f -r ~/.config/nvim ./.config/
+rm -rf ./.config/nvim/.git
 cp ~/.zshrc .
 
 git add .

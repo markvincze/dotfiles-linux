@@ -23,6 +23,8 @@ return {
         -- hide_ignored = true, -- hide files that are ignored by other gitignore-like files
       },
       window = {
+        width = 20,
+        auto_expand_width = true,
         mappings = {
           ['\\'] = 'close_window',
           ['/'] = 'none',

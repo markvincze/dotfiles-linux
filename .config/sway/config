@@ -263,9 +263,18 @@ exec gnome-keyring-daemon --start --components=secrets
 # Startup apps
 # Notification Daemon
 exec swaync
-exec --no-startup-id swaymsg "workspace $ws2; exec --no-startup-id vivaldi"
-exec --no-startup-id swaymsg "workspace $ws3; exec --no-startup-id $term"
-exec --no-startup-id swaymsg "workspace $ws4; exec --no-startup-id $term"
+
+    #set $ws1 "1 Chat 💬"
+    #set $ws2 "2 Browser 🌎"
+    #set $ws3 "3 Terminal 🚀"
+    #set $ws4 "4 Editor 📝"
+
+#exec --no-startup-id swaymsg 'workspace $ws2; exec --no-startup-id vivaldi'
+#exec --no-startup-id swaymsg 'workspace $ws3; exec --no-startup-id $term'
+#exec --no-startup-id swaymsg 'workspace $ws4; exec --no-startup-id $term'
+exec --no-startup-id swaymsg 'workspace "2 Browser 🌎"; exec --no-startup-id vivaldi'
+exec --no-startup-id swaymsg 'workspace "3 Terminal 🚀"; exec --no-startup-id $term'
+exec --no-startup-id swaymsg 'workspace "4 Editor 📝"; exec --no-startup-id $term'
 
 # Include configs from 3 locations:
 #  - /usr/share/sway/config.d

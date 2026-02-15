@@ -48,7 +48,8 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
-theme = Night Owl
+# theme = Night Owl
+theme = everforest-dark
 #theme = Night Owlish Light
 
 working-directory = ~/Workspaces

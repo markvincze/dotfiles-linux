@@ -192,6 +192,10 @@ vim.diagnostic.config {
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- Comment
+vim.keymap.set('n', '<leader>/', 'gcc', { desc = 'toggle comment', remap = true })
+vim.keymap.set('v', '<leader>/', 'gc', { desc = 'toggle comment', remap = true })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -449,7 +453,7 @@ require('lazy').setup({
       })
 
       -- Override default behavior and theme when searching
-      vim.keymap.set('n', '<leader>/', function()
+      vim.keymap.set('n', '<leader>;', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           winblend = 10,
@@ -600,6 +604,7 @@ require('lazy').setup({
         -- clangd = {},
         gopls = {},
         pyright = {},
+        protols = {},
         -- rust_analyzer = {},
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -620,10 +625,14 @@ require('lazy').setup({
       vim.list_extend(ensure_installed, {
         'lua-language-server', -- Lua Language server
         'stylua', -- Used to format Lua code
+        'bash-language-server',
         -- You can add other tools here that you want Mason to install
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+
+      -- bashls does not have a Mason package with a matching name, so adding it after the Mason setup.
+      servers['bashls'] = {}
 
       for name, server in pairs(servers) do
         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
@@ -813,9 +822,14 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'everforest'
     end,
   },
+
+  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+
+  { 'sainnhe/everforest', name = 'everforest', priority = 1000 },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },

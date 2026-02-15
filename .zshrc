@@ -8,7 +8,8 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
+ZSH_THEME="agnoster"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -133,13 +134,12 @@ alias cdp="cd ~/Workspaces/GitLab/refurbed/platform"
 # Make ctrl+backspace delete a hole word
 bindkey '^H' backward-kill-word
 
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:~/go/bin
+export PATH=$PATH:~/.local/bin
 export PATH=$PATH:~/Tools
 export PATH=$PATH:~/Tools/protoc/bin
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:~/go/bin
 export PATH=$PATH:~/Tools/golangci-lint/bin
-export PLAN9=/home/mark/Workspaces/GitHub/9fans/plan9port
-export PATH=$PATH:$PLAN9/bin
 
 export GOPRIVATE=gitlab.com/refurbed/engineering/*
 export GONOSUMDB=gitlab.com/refurbed/engineering/*

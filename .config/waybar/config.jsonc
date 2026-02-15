@@ -4,7 +4,7 @@
     "height": 30,
     "spacing": 1,
     "margin": 0,
-    "modules-left": ["sway/workspaces", "sway/mode", "custom/weather", "custom/quote"],
+    "modules-left": ["sway/workspaces", "sway/mode", "custom/weather"],
         "modules-center": [],                                                                           //battery   //disk     // uptime      //updates        // systray
     "modules-right": ["pulseaudio", "backlight", "network", "cpu", "memory", "temperature", "battery", "disk", "custom/uptime", "custom/updates", "tray","clock"],
 

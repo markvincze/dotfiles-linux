@@ -196,6 +196,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('n', '<leader>/', 'gcc', { desc = 'toggle comment', remap = true })
 vim.keymap.set('v', '<leader>/', 'gc', { desc = 'toggle comment', remap = true })
 
+-- Support ctrl+backspace and ctrl+delete
+vim.keymap.set('i', '<C-BS>', '<C-w>')
+vim.keymap.set('c', '<C-BS>', '<C-w>')
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.

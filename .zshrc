@@ -4,6 +4,22 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
+
+export OS="$(uname | tr '[:upper:]' '[:lower:]')"
+
+function __is_available {
+  prog="${1}"
+  os="${2}"
+
+  if [ "${os}" != "" ] && [ "${os}" != "${OS}" ]
+  then 
+    return 1
+  fi
+
+  type "${prog}" > /dev/null 
+  return "$?"
+}
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -130,6 +146,21 @@ alias wolpc="wol 70:85:c2:6f:ab:63"
 #alias nvimc="nvim ~/.config/nvim/init.lua"
 alias nvimc='nvim -c "cd ~/.config/nvim" ~/.config/nvim/init.lua'
 alias cdp="cd ~/Workspaces/GitLab/refurbed/platform"
+alias grebm='curr=$(git_current_branch) && git co $(git_main_branch) && git pull && git co $curr && git rebase $(git_main_branch)'
+
+# https://github.com/eza-community/eza
+__is_available eza \
+&& alias ls='eza  --time-style=relative --git --octal-permissions --icons \
+  --color=auto --binary -lg' \
+&& alias ll='eza  --time-style=long-iso --git --octal-permissions --icons \
+  --color=auto --binary -la' \
+&& alias la='eza  --time-style=long-iso --git --octal-permissions         \
+  --color=auto --binary --changed -lahHgnuU' \
+&& alias l='eza   --time-style=long-iso --git                     --icons \
+  --color=auto --binary -l --no-time' \
+&& alias lls='eza --time-style=long-iso --git --octal-permissions --icons \
+  --color=auto --binary -las modified' \
+&& alias l1='eza  -1 --icons=never --color=auto'
 
 # Make ctrl+backspace delete a hole word
 bindkey '^H' backward-kill-word
@@ -196,3 +227,5 @@ if [ -f '/home/mark/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/home/mark/T
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc'; fi
+
+#eval "$(starship init zsh)"

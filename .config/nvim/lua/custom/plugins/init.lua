@@ -4,16 +4,6 @@
 -- See the kickstart.nvim README for more information
 return {
   {
-    'nvimdev/dashboard-nvim',
-    event = 'VimEnter',
-    config = function()
-      require('dashboard').setup {
-        -- config
-      }
-    end,
-    dependencies = { { 'nvim-tree/nvim-web-devicons' } },
-  },
-  {
     'f-person/git-blame.nvim',
     -- load the plugin at startup
     event = 'VeryLazy',
@@ -41,5 +31,15 @@ return {
     'pmizio/typescript-tools.nvim',
     dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
     opts = {},
+  },
+  {
+    'petertriho/nvim-scrollbar',
+    dependencies = { 'kevinhwang91/nvim-hlslens', 'lewis6991/gitsigns.nvim' },
+    opts = {},
+  },
+  {
+    'restclient.nvim',
+    dir = '~/Workspaces/GitHub/markvincze/restclient.nvim',
+    config = function() require('restclient').setup {} end,
   },
 }

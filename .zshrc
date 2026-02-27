@@ -4,22 +4,6 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-
-export OS="$(uname | tr '[:upper:]' '[:lower:]')"
-
-function __is_available {
-  prog="${1}"
-  os="${2}"
-
-  if [ "${os}" != "" ] && [ "${os}" != "${OS}" ]
-  then 
-    return 1
-  fi
-
-  type "${prog}" > /dev/null 
-  return "$?"
-}
-
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -146,21 +130,18 @@ alias wolpc="wol 70:85:c2:6f:ab:63"
 #alias nvimc="nvim ~/.config/nvim/init.lua"
 alias nvimc='nvim -c "cd ~/.config/nvim" ~/.config/nvim/init.lua'
 alias cdp="cd ~/Workspaces/GitLab/refurbed/platform"
-alias grebm='curr=$(git_current_branch) && git co $(git_main_branch) && git pull && git co $curr && git rebase $(git_main_branch)'
 
-# https://github.com/eza-community/eza
-__is_available eza \
-&& alias ls='eza  --time-style=relative --git --octal-permissions --icons \
-  --color=auto --binary -lg' \
-&& alias ll='eza  --time-style=long-iso --git --octal-permissions --icons \
-  --color=auto --binary -la' \
-&& alias la='eza  --time-style=long-iso --git --octal-permissions         \
-  --color=auto --binary --changed -lahHgnuU' \
-&& alias l='eza   --time-style=long-iso --git                     --icons \
-  --color=auto --binary -l --no-time' \
-&& alias lls='eza --time-style=long-iso --git --octal-permissions --icons \
-  --color=auto --binary -las modified' \
-&& alias l1='eza  -1 --icons=never --color=auto'
+# Replace ls with eza
+alias ls='eza'
+
+# Long format with headers and icons
+alias ll='eza -l --header --icons'
+
+# Long format including hidden files
+alias la='eza -la --header --icons'
+
+# Tree view shortcut
+alias tree='eza --tree'
 
 # Make ctrl+backspace delete a hole word
 bindkey '^H' backward-kill-word
@@ -174,6 +155,9 @@ export PATH=$PATH:~/Tools/golangci-lint/bin
 
 export GOPRIVATE=gitlab.com/refurbed/engineering/*
 export GONOSUMDB=gitlab.com/refurbed/engineering/*
+
+# Completion for eza
+export FPATH="~/Workspaces/GitHub/eza-community/eza/completions/zsh:$FPATH"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -222,6 +206,32 @@ function ssh() {
     set_bg "$(get_bg)"
 }
 
+#source <(fzf --zsh)
+function fzf_setup_using_fzf() {
+  (( ${+commands[fzf]} )) || return 1
+
+  local fzf_ver=${"$(fzf --version)"#fzf }
+
+  autoload -Uz is-at-least
+  is-at-least 0.48.0 ${${(s: :)fzf_ver}[1]} || return 1
+
+  eval "$(fzf --zsh)"
+}
+
+function fzf_setup_error() {
+  cat >&2 <<'EOF'
+fzf plugin: Cannot find fzf installation directory.
+Please add `export FZF_BASE=/path/to/fzf/install/dir` to your .zshrc
+EOF
+}
+
+fzf_setup_using_fzf \
+  || fzf_setup_error
+
+unset -f -m 'fzf_setup_*'
+
+export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*"'
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/mark/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/path.zsh.inc'; fi
 
@@ -229,3 +239,7 @@ if [ -f '/home/mark/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/home/mark/T
 if [ -f '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc'; fi
 
 #eval "$(starship init zsh)"
+
+
+[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver
+

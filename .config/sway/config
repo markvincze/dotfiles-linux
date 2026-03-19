@@ -36,7 +36,7 @@ set $rofi_cmd rofi -terminal '$term'
 set $menu $rofi_cmd -show combi -combi-modes drun#run -modes combi
 
 ### Output configuration
-output * bg ~/Pictures/Wallpapers/wallpaper.jpg fill
+#output * bg ~/Pictures/Wallpapers/wallpaper.jpg fill
 
 output "HDMI-A-1" {
     mode 1440x2560@60Hz
@@ -70,6 +70,8 @@ output "DVI-D-1" {
 # your displays after another 300 seconds, and turn your screens back on when
 # resumed. It will also lock your screen before your computer goes to sleep.
 
+set $ipc qs -c noctalia-shell ipc call
+
 ### Key bindings
 #
 # Basics:
@@ -81,7 +83,7 @@ output "DVI-D-1" {
     bindsym $mod+Shift+q kill
 
     # Start your launcher
-    bindsym $mod+d exec $menu
+    #bindsym $mod+d exec $menu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -220,9 +222,23 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-bindsym Ctrl+Mod1+Delete exec wlogout
+#bindsym Ctrl+Mod1+Delete exec wlogout
 
 bindsym $mod+Semicolon exec ~/Tools/wofi-emoji
+
+# Noctalia controls
+bindsym $mod+d exec $ipc launcher toggle
+bindsym $mod+alt+l exec $ipc lockScreen lock
+bindsym Ctrl+Mod1+Delete exec $ipc sessionMenu toggle
+
+# Brightness and volume control (this is needed because the default sway config was sending unneeded notifications.
+bindsym XF86MonBrightnessDown exec $ipc brightness decrease
+bindsym XF86MonBrightnessUp exec $ipc brightness increase
+
+bindsym XF86AudioLowerVolume exec $ipc volume decrease
+bindsym XF86AudioRaiseVolume exec $ipc volume increase
+bindsym XF86AudioMute exec $ipc volume muteOutput
+bindsym XF86AudioMicMute exec $ipc volume muteInput
 
 input "type:touchpad" {
     dwt enabled
@@ -251,7 +267,7 @@ input "type:keyboard" {
 }
 
 # Toggle control center
-bindsym $mod+Shift+n exec swaync-client -t -sw
+#bindsym $mod+Shift+n exec swaync-client -t -sw
 
 # Set XDG_CURRENT_DESKTOP for proper Wayland support
 exec --no-startup-id dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
@@ -264,7 +280,9 @@ exec gnome-keyring-daemon --start --components=secrets
 
 # Startup apps
 # Notification Daemon
-exec swaync
+#exec swaync
+
+exec qs -c noctalia-shell
 
     #set $ws1 "1 Chat 💬"
     #set $ws2 "2 Browser 🌎"
@@ -274,7 +292,7 @@ exec swaync
 #exec --no-startup-id swaymsg 'workspace $ws2; exec --no-startup-id vivaldi'
 #exec --no-startup-id swaymsg 'workspace $ws3; exec --no-startup-id $term'
 #exec --no-startup-id swaymsg 'workspace $ws4; exec --no-startup-id $term'
-exec --no-startup-id swaymsg 'workspace "2 Browser 🌎"; exec --no-startup-id vivaldi'
+#exec --no-startup-id swaymsg 'workspace "2 Browser 🌎"; exec --no-startup-id vivaldi'
 exec --no-startup-id swaymsg 'workspace "3 Terminal 🚀"; exec --no-startup-id $term'
 exec --no-startup-id swaymsg 'workspace "4 Editor 📝"; exec --no-startup-id $term'
 
@@ -299,4 +317,5 @@ exec --no-startup-id swaymsg 'workspace "4 Editor 📝"; exec --no-startup-id $t
 # important to make the magic work. And if you want to learn the secret behind
 # the trick, it's all in the `wordexp(3)`.
 #
+
 include '$(/usr/libexec/sway/layered-include "/usr/share/sway/config.d/*.conf" "/etc/sway/config.d/*.conf" "${XDG_CONFIG_HOME:-$HOME/.config}/sway/config.d/*.conf")'

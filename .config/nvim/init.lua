@@ -364,6 +364,12 @@ require('lazy').setup({
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      {
+        'nvim-telescope/telescope-live-grep-args.nvim',
+        -- This will not install any breaking changes.
+        -- For major updates, this must be adjusted manually.
+        version = '^1.0.0',
+      },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -396,7 +402,11 @@ require('lazy').setup({
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
         --   },
         -- },
-        -- pickers = {}
+        pickers = {
+          find_files = {
+            hidden = true,
+          },
+        },
         extensions = {
           ['ui-select'] = { require('telescope.themes').get_dropdown() },
         },
@@ -415,11 +425,12 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
 
-      vim.keymap.set('n', '<leader>sg', function()
-        builtin.live_grep {
-          additional_args = function(opts) return { '--hidden' } end,
-        }
-      end, { desc = '[S]earch by [G]rep' })
+      vim.keymap.set('n', '<leader>sg', require('telescope').extensions.live_grep_args.live_grep_args, { noremap = true, desc = '[S]earch by [G]rep' })
+      -- vim.keymap.set('n', '<leader>sg', function()
+      --   builtin.live_grep {
+      --     additional_args = function(opts) return { '--hidden' } end,
+      --   }
+      -- end, { desc = '[S]earch by [G]rep' })
 
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
@@ -556,6 +567,7 @@ require('lazy').setup({
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
           map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+          map('<leader>a', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -642,6 +654,7 @@ require('lazy').setup({
 
       -- bashls does not have a Mason package with a matching name, so adding it after the Mason setup.
       servers['bashls'] = {}
+      servers['jsonls'] = {}
 
       for name, server in pairs(servers) do
         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
@@ -837,8 +850,8 @@ require('lazy').setup({
   },
 
   { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
-
   { 'sainnhe/everforest', name = 'everforest', priority = 1000 },
+  { 'rose-pine/neovim', name = 'rose-pine', priority = 1000 },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },

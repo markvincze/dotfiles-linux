@@ -121,8 +121,6 @@ vim.o.breakindent = true
 
 -- Tab display width
 vim.o.tabstop = 4
-vim.o.softtabstop = 4
-vim.o.shiftwidth = 4
 
 -- Save undo history
 vim.o.undofile = true
@@ -143,6 +141,13 @@ vim.o.timeoutlen = 300
 -- Configure how new splits should be opened
 vim.o.splitright = true
 vim.o.splitbelow = true
+
+-- Configure fold
+vim.o.foldmethod = 'expr'
+vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.foldnestmax = 99
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
@@ -172,10 +177,15 @@ vim.o.confirm = true
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+-- Moving up/down in wrapped lines.
+vim.keymap.set('n', 'j', 'gj')
+vim.keymap.set('n', 'k', 'gk')
+vim.keymap.set('n', 'gj', 'j')
+vim.keymap.set('n', 'gk', 'k')
+
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-vim.keymap.set('n', '<C-S-r>', '<cmd>Lazy reload restclient.nvim<CR>')
 
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
@@ -198,6 +208,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- Comment
 vim.keymap.set('n', '<leader>/', 'gcc', { desc = 'toggle comment', remap = true })
 vim.keymap.set('v', '<leader>/', 'gc', { desc = 'toggle comment', remap = true })
+
+-- Support ctrl+backspace and ctrl+delete
+vim.keymap.set('i', '<C-BS>', '<C-w>')
+vim.keymap.set('c', '<C-BS>', '<C-w>')
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -403,6 +417,9 @@ require('lazy').setup({
         --   },
         -- },
         pickers = {
+          colorscheme = {
+            enable_preview = true,
+          },
           find_files = {
             hidden = true,
           },
@@ -415,6 +432,7 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension, 'live_grep_args')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -424,14 +442,8 @@ require('lazy').setup({
       vim.keymap.set('n', '<C-p>', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-
-      vim.keymap.set('n', '<leader>sg', require('telescope').extensions.live_grep_args.live_grep_args, { noremap = true, desc = '[S]earch by [G]rep' })
-      -- vim.keymap.set('n', '<leader>sg', function()
-      --   builtin.live_grep {
-      --     additional_args = function(opts) return { '--hidden' } end,
-      --   }
-      -- end, { desc = '[S]earch by [G]rep' })
-
+      -- vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+      vim.keymap.set('n', '<leader>sg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
@@ -567,7 +579,6 @@ require('lazy').setup({
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
           map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
-          map('<leader>a', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -623,9 +634,12 @@ require('lazy').setup({
       --  See `:help lsp-config` for information about keys and how to configure
       local servers = {
         -- clangd = {},
-        gopls = {},
+        gopls = {
+          gofumpt = true,
+        },
         pyright = {},
         protols = {},
+        -- ts_ls = {},
         -- rust_analyzer = {},
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -647,6 +661,9 @@ require('lazy').setup({
         'lua-language-server', -- Lua Language server
         'stylua', -- Used to format Lua code
         'bash-language-server',
+        'golangci-lint',
+        'golangci-lint-langserver',
+        'typescript-language-server',
         -- You can add other tools here that you want Mason to install
       })
 
@@ -654,7 +671,20 @@ require('lazy').setup({
 
       -- bashls does not have a Mason package with a matching name, so adding it after the Mason setup.
       servers['bashls'] = {}
-      servers['jsonls'] = {}
+      servers['golangci_lint_ls'] = {
+        cmd = { 'golangci-lint-langserver' },
+        root_markers = { '.git', 'go.mod' },
+        init_options = {
+          command = {
+            'golangci-lint',
+            'run',
+            '--output.json.path',
+            'stdout',
+            '--show-stats=false',
+            '--issues-exit-code=1',
+          },
+        },
+      }
 
       for name, server in pairs(servers) do
         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
@@ -688,6 +718,9 @@ require('lazy').setup({
         },
       })
       vim.lsp.enable 'lua_ls'
+
+      vim.lsp.config('jsonls', {})
+      vim.lsp.enable 'jsonls'
     end,
   },
 
@@ -845,13 +878,25 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-night'
-      vim.cmd.colorscheme 'everforest'
+      -- vim.cmd.colorscheme 'rose-pine-main'
     end,
   },
 
   { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
   { 'sainnhe/everforest', name = 'everforest', priority = 1000 },
+  { 'rebelot/kanagawa.nvim', name = 'kanagawa', priority = 1000 },
   { 'rose-pine/neovim', name = 'rose-pine', priority = 1000 },
+  { 'talha-akram/noctis.nvim', name = 'rose-pine', priority = 1000 },
+  {
+    'oxfist/night-owl.nvim',
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000, -- make sure to load this before all the other start plugins
+    config = function()
+      -- load the colorscheme here
+      -- require('night-owl').setup()
+      vim.cmd.colorscheme 'noctis'
+    end,
+  },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -928,7 +973,7 @@ require('lazy').setup({
   require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 

@@ -24,7 +24,7 @@ return {
       },
       window = {
         width = 20,
-        auto_expand_width = true,
+        --auto_expand_width = true,
         mappings = {
           ['\\'] = 'close_window',
           ['/'] = 'none',

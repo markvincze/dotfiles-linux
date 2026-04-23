@@ -1,9 +1,9 @@
-#set -x
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+
 
 export OS="$(uname | tr '[:upper:]' '[:lower:]')"
 
@@ -171,12 +171,10 @@ export PATH=$PATH:~/Tools/protoc/bin
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:~/go/bin
 export PATH=$PATH:~/Tools/golangci-lint/bin
+export PATH=$PATH:~/Tools/zig/zig-x86_64-linux-0.15.2
 
 export GOPRIVATE=gitlab.com/refurbed/engineering/*
 export GONOSUMDB=gitlab.com/refurbed/engineering/*
-
-# Completion for eza
-export FPATH="~/Workspaces/GitHub/eza-community/eza/completions/zsh:$FPATH"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

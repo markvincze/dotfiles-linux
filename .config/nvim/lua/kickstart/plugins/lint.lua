@@ -3,10 +3,20 @@ return {
   { -- Linting
     'mfussenegger/nvim-lint',
     event = { 'BufReadPre', 'BufNewFile' },
+    -- opts = {
+    --   linters = {
+    --     ['markdownlint'] = {
+    --       args = { '-c', '~/.config/nvim/.markdownlint.json', '--' },
+    --     },
+    --   },
+    -- },
     config = function()
       local lint = require 'lint'
+      -- lint.linters.markdownlint.args = { '-c', '~/.config/nvim/.markdownlint.json', '--' }
+      lint.linters.markdownlint.args = { '-c', '~/.config/nvim/.markdownlint.json', '--stdin' }
       lint.linters_by_ft = {
-        --markdown = { 'markdownlint' },
+        markdown = { 'markdownlint' },
+        -- markdown = { 'vale' },
       }
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,

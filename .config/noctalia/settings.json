@@ -47,7 +47,6 @@
         "contentPadding": 2,
         "density": "default",
         "displayMode": "always_visible",
-        "enableExclusionZoneInset": true,
         "floating": false,
         "fontScale": 1,
         "frameRadius": 12,
@@ -62,7 +61,7 @@
         ],
         "mouseWheelAction": "none",
         "mouseWheelWrap": true,
-        "outerCorners": false,
+        "outerCorners": true,
         "position": "top",
         "reverseScroll": false,
         "rightClickAction": "controlCenter",
@@ -130,7 +129,6 @@
                     "occupiedColor": "secondary",
                     "pillSize": 0.75,
                     "showApplications": false,
-                    "showApplicationsHover": false,
                     "showBadge": true,
                     "showLabelsOnlyWhenOccupied": true,
                     "unfocusedIconsOpacity": 1
@@ -174,7 +172,7 @@
                 },
                 {
                     "applyToAllMonitors": false,
-                    "displayMode": "onhover",
+                    "displayMode": "alwaysShow",
                     "iconColor": "none",
                     "id": "Brightness",
                     "textColor": "none"
@@ -325,7 +323,6 @@
     "desktopWidgets": {
         "enabled": false,
         "gridSnap": false,
-        "gridSnapScale": false,
         "monitorWidgets": [
         ],
         "overviewEnabled": true
@@ -376,7 +373,7 @@
         "enableBlurBehind": true,
         "enableLockScreenCountdown": true,
         "enableLockScreenMediaControls": false,
-        "enableShadows": false,
+        "enableShadows": true,
         "forceBlackScreenCorners": false,
         "iRadiusRatio": 1,
         "keybinds": {
@@ -452,7 +449,7 @@
     },
     "location": {
         "analogClockInCalendar": false,
-        "firstDayOfWeek": 1,
+        "firstDayOfWeek": -1,
         "hideWeatherCityName": false,
         "hideWeatherTimezone": false,
         "name": "Budapest",
@@ -466,7 +463,7 @@
     },
     "network": {
         "airplaneModeEnabled": false,
-        "bluetoothAutoConnect": true,
+        "bluetoothAutoConnect": false,
         "bluetoothDetailsViewMode": "grid",
         "bluetoothHideUnnamedDevices": false,
         "bluetoothRssiPollIntervalMs": 60000,
@@ -635,11 +632,9 @@
         "fontFixedScale": 1,
         "panelBackgroundOpacity": 0.93,
         "panelsAttachedToBar": true,
-        "scrollbarAlwaysVisible": true,
         "settingsPanelMode": "attached",
         "settingsPanelSideBarCardStyle": false,
-        "tooltipsEnabled": true,
-        "translucentWidgets": false
+        "tooltipsEnabled": true
     },
     "wallpaper": {
         "automationEnabled": false,

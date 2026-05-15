@@ -184,6 +184,10 @@ vim.keymap.set('n', 'k', 'gk')
 vim.keymap.set('n', 'gj', 'j')
 vim.keymap.set('n', 'gk', 'k')
 
+-- Switching between tabs
+vim.keymap.set('n', '<tab>', '<cmd>tabnext<cr>', { desc = 'Next Tab' })
+vim.keymap.set('n', '<S-tab>', '<cmd>tabprevious<cr>', { desc = 'Previous Tab' })
+
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -408,6 +412,8 @@ require('lazy').setup({
 
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
+      local lga_actions = require 'telescope-live-grep-args.actions'
+
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
@@ -417,6 +423,12 @@ require('lazy').setup({
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
         --   },
         -- },
+        defaults = {
+          sorting_strategy = 'ascending',
+          layout_config = {
+            prompt_position = 'top',
+          },
+        },
         pickers = {
           colorscheme = {
             enable_preview = true,
@@ -427,6 +439,23 @@ require('lazy').setup({
         },
         extensions = {
           ['ui-select'] = { require('telescope.themes').get_dropdown() },
+          live_grep_args = {
+            auto_quoting = true, -- enable/disable auto-quoting
+            -- define mappings, e.g.
+            mappings = { -- extend mappings
+              i = {
+                ['<C-k>'] = lga_actions.quote_prompt(),
+                ['<C-i>'] = lga_actions.quote_prompt { postfix = ' --iglob ' },
+                -- freeze the current list and start a fuzzy search in the frozen list
+                ['<C-space>'] = lga_actions.to_fuzzy_refine,
+              },
+            },
+            -- ... also accepts theme settings, for example:
+            -- theme = "dropdown", -- use dropdown theme
+            -- theme = { }, -- use own theme spec
+            -- layout_config = { mirror=true }, -- mirror preview pane
+            additional_args = { '--hidden' },
+          },
         },
       }
 
@@ -580,6 +609,7 @@ require('lazy').setup({
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
           map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+          map('<leader>a', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -636,7 +666,12 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         gopls = {
-          gofumpt = true,
+          settings = {
+            gopls = {
+              gofumpt = true,
+              buildFlags = { '-tags=integration_test' },
+            },
+          },
         },
         pyright = {},
         protols = {},
@@ -665,6 +700,7 @@ require('lazy').setup({
         'golangci-lint',
         'golangci-lint-langserver',
         'typescript-language-server',
+        'postgres-language-server',
         -- You can add other tools here that you want Mason to install
       })
 
@@ -672,6 +708,15 @@ require('lazy').setup({
 
       -- bashls does not have a Mason package with a matching name, so adding it after the Mason setup.
       servers['bashls'] = {}
+      servers['jsonls'] = {}
+      servers['postgres_lsp'] = {
+        cmd = { 'postgres-language-server', 'lsp-proxy' },
+        filetypes = {
+          'sql',
+        },
+        root_markers = { 'postgres-language-server.jsonc' },
+        workspace_required = false,
+      }
       servers['golangci_lint_ls'] = {
         cmd = { 'golangci-lint-langserver' },
         root_markers = { '.git', 'go.mod' },
@@ -719,9 +764,6 @@ require('lazy').setup({
         },
       })
       vim.lsp.enable 'lua_ls'
-
-      vim.lsp.config('jsonls', {})
-      vim.lsp.enable 'jsonls'
     end,
   },
 
@@ -880,24 +922,25 @@ require('lazy').setup({
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-night'
       -- vim.cmd.colorscheme 'rose-pine-main'
+      vim.cmd.colorscheme 'everforest'
     end,
   },
 
-  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+  -- { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
   { 'sainnhe/everforest', name = 'everforest', priority = 1000 },
-  { 'rebelot/kanagawa.nvim', name = 'kanagawa', priority = 1000 },
-  { 'rose-pine/neovim', name = 'rose-pine', priority = 1000 },
-  { 'talha-akram/noctis.nvim', name = 'rose-pine', priority = 1000 },
-  {
-    'oxfist/night-owl.nvim',
-    lazy = false, -- make sure we load this during startup if it is your main colorscheme
-    priority = 1000, -- make sure to load this before all the other start plugins
-    config = function()
-      -- load the colorscheme here
-      -- require('night-owl').setup()
-      vim.cmd.colorscheme 'noctis'
-    end,
-  },
+  -- { 'rebelot/kanagawa.nvim', name = 'kanagawa', priority = 1000 },
+  -- { 'rose-pine/neovim', name = 'rose-pine', priority = 1000 },
+  -- { 'talha-akram/noctis.nvim', name = 'rose-pine', priority = 1000 },
+  -- {
+  --   'oxfist/night-owl.nvim',
+  --   lazy = false, -- make sure we load this during startup if it is your main colorscheme
+  --   priority = 1000, -- make sure to load this before all the other start plugins
+  --   config = function()
+  --     -- load the colorscheme here
+  --     -- require('night-owl').setup()
+  --     vim.cmd.colorscheme 'noctis'
+  --   end,
+  -- },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },

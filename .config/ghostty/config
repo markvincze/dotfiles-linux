@@ -49,18 +49,17 @@
 # resize-overlay-duration = 4s 200ms
 
 theme = Night Owl
-# theme = everforest-dark
-#theme = Oceanic Next
-#theme = Night Owlish Light
+#theme = everforest-dark
+# theme = Ayu Light
 
 working-directory = ~/Workspaces
 background-opacity = 0.9
-background-blur = 20
+#background-blur = 20
 cursor-style = block
 shell-integration-features = no-cursor
 keybind = performable:ctrl+c=copy_to_clipboard
 keybind = ctrl+v=paste_from_clipboard
-keybind = ctrl+shift+p=toggle_command_palette
+
 notify-on-command-finish = unfocused
 notify-on-command-finish-action = notify
 notify-on-command-finish-after = 5s

@@ -121,6 +121,8 @@ vim.o.breakindent = true
 
 -- Tab display width
 vim.o.tabstop = 4
+vim.o.softtabstop = 4
+vim.o.shiftwidth = 4
 
 -- Save undo history
 vim.o.undofile = true
@@ -142,13 +144,6 @@ vim.o.timeoutlen = 300
 vim.o.splitright = true
 vim.o.splitbelow = true
 
--- Configure fold
-vim.o.foldmethod = 'expr'
-vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-vim.o.foldlevel = 99
-vim.o.foldlevelstart = 99
-vim.o.foldnestmax = 99
-
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
@@ -158,8 +153,7 @@ vim.o.foldnestmax = 99
 --   See `:help lua-options`
 --   and `:help lua-guide-options`
 vim.o.list = true
--- vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
-vim.opt.listchars = { tab = '  ', trail = '·', nbsp = '␣' }
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
@@ -178,12 +172,6 @@ vim.o.confirm = true
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
--- Moving up/down in wrapped lines.
-vim.keymap.set('n', 'j', 'gj')
-vim.keymap.set('n', 'k', 'gk')
-vim.keymap.set('n', 'gj', 'j')
-vim.keymap.set('n', 'gk', 'k')
-
 -- Switching between tabs
 vim.keymap.set('n', '<tab>', '<cmd>tabnext<cr>', { desc = 'Next Tab' })
 vim.keymap.set('n', '<S-tab>', '<cmd>tabprevious<cr>', { desc = 'Previous Tab' })
@@ -191,6 +179,10 @@ vim.keymap.set('n', '<S-tab>', '<cmd>tabprevious<cr>', { desc = 'Previous Tab' }
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.keymap.set('n', '<C-S-r>', '<cmd>Lazy reload restclient.nvim<CR>')
+
+vim.keymap.set('n', '<c-i>', '<c-i>')
+vim.keymap.set('n', '<tab>', 'gt')
 
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
@@ -214,6 +206,13 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('n', '<leader>/', 'gcc', { desc = 'toggle comment', remap = true })
 vim.keymap.set('v', '<leader>/', 'gc', { desc = 'toggle comment', remap = true })
 
+-- Yank current file path
+vim.keymap.set('n', '<leader>cp', ':let @+ = expand("%")<cr>', { desc = 'yank file path', remap = true })
+
+-- Move in wrapped lines
+vim.keymap.set({ 'n', 'v' }, 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true })
+vim.keymap.set({ 'n', 'v' }, 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true })
+--
 -- Support ctrl+backspace and ctrl+delete
 vim.keymap.set('i', '<C-BS>', '<C-w>')
 vim.keymap.set('c', '<C-BS>', '<C-w>')
@@ -462,7 +461,6 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
-      pcall(require('telescope').load_extension, 'live_grep_args')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -472,12 +470,19 @@ require('lazy').setup({
       vim.keymap.set('n', '<C-p>', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-      -- vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
-      vim.keymap.set('n', '<leader>sg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [G]rep' })
+
+      vim.keymap.set('n', '<leader>sg', require('telescope').extensions.live_grep_args.live_grep_args, { noremap = true, desc = '[S]earch by [G]rep' })
+      -- vim.keymap.set('n', '<leader>sg', function()
+      --   builtin.live_grep {
+      --     additional_args = function(opts) return { '--hidden' } end,
+      --   }
+      -- end, { desc = '[S]earch by [G]rep' })
+
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
+      vim.keymap.set('n', '<leader>st', builtin.lsp_workspace_symbols, { desc = '[S]earch [T]ypes' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- This runs on LSP attach per buffer (see main LSP attach function in 'neovim/nvim-lspconfig' config for more info,
@@ -665,17 +670,9 @@ require('lazy').setup({
       --  See `:help lsp-config` for information about keys and how to configure
       local servers = {
         -- clangd = {},
-        gopls = {
-          settings = {
-            gopls = {
-              gofumpt = true,
-              buildFlags = { '-tags=integration_test' },
-            },
-          },
-        },
+        gopls = {},
         pyright = {},
         protols = {},
-        -- ts_ls = {},
         -- rust_analyzer = {},
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -907,40 +904,28 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
+    -- 'folke/tokyonight.nvim',
+    'rebelot/kanagawa.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
       ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
-      }
+      -- require('tokyonight').setup {
+      --   styles = {
+      --     comments = { italic = false }, -- Disable italics in comments
+      --   },
+      -- }
 
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-night'
-      -- vim.cmd.colorscheme 'rose-pine-main'
-      vim.cmd.colorscheme 'everforest'
+      vim.cmd.colorscheme 'kanagawa'
     end,
   },
 
   -- { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
-  { 'sainnhe/everforest', name = 'everforest', priority = 1000 },
-  -- { 'rebelot/kanagawa.nvim', name = 'kanagawa', priority = 1000 },
+  -- { 'sainnhe/everforest', name = 'everforest', priority = 1000 },
   -- { 'rose-pine/neovim', name = 'rose-pine', priority = 1000 },
-  -- { 'talha-akram/noctis.nvim', name = 'rose-pine', priority = 1000 },
-  -- {
-  --   'oxfist/night-owl.nvim',
-  --   lazy = false, -- make sure we load this during startup if it is your main colorscheme
-  --   priority = 1000, -- make sure to load this before all the other start plugins
-  --   config = function()
-  --     -- load the colorscheme here
-  --     -- require('night-owl').setup()
-  --     vim.cmd.colorscheme 'noctis'
-  --   end,
-  -- },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -1017,7 +1002,7 @@ require('lazy').setup({
   require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
+  -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 

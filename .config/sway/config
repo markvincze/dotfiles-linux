@@ -16,7 +16,7 @@ client.focused $cyan $bg1 $fg $yellow $cyan
 
 # Hide the title bar
 default_border pixel 3
-# gaps inner 0
+gaps inner 10
 
 ### Variables
 #
@@ -29,14 +29,14 @@ set $down j
 set $up k
 set $right l
 
-set $term /usr/bin/ghostty
+set $term ghostty
 
 # Your preferred application launcher
 set $rofi_cmd rofi -terminal '$term'
 set $menu $rofi_cmd -show combi -combi-modes drun#run -modes combi
 
 ### Output configuration
-#output * bg ~/Pictures/Wallpapers/pexels-incrediblerafa-4737484.jpg fill
+#output * bg ~/Pictures/Wallpapers/wallpaper.jpg fill
 
 output "HDMI-A-1" {
     mode 1440x2560@60Hz
@@ -69,9 +69,6 @@ output "DVI-D-1" {
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
 # resumed. It will also lock your screen before your computer goes to sleep.
-
-exec swayidle -w \
-timeout 180 'swaymsg "output * power off"' resume 'swaymsg "output * power on"'
 
 set $ipc qs -c noctalia-shell ipc call
 
@@ -235,13 +232,13 @@ bindsym $mod+alt+l exec $ipc lockScreen lock
 bindsym Ctrl+Mod1+Delete exec $ipc sessionMenu toggle
 
 # Brightness and volume control (this is needed because the default sway config was sending unneeded notifications.
-# bindsym XF86MonBrightnessDown exec $ipc brightness decrease
-# bindsym XF86MonBrightnessUp exec $ipc brightness increase
-#
-# bindsym XF86AudioLowerVolume exec $ipc volume decrease
-# bindsym XF86AudioRaiseVolume exec $ipc volume increase
-# bindsym XF86AudioMute exec $ipc volume muteOutput
-# bindsym XF86AudioMicMute exec $ipc volume muteInput
+bindsym XF86MonBrightnessDown exec $ipc brightness decrease
+bindsym XF86MonBrightnessUp exec $ipc brightness increase
+
+bindsym XF86AudioLowerVolume exec $ipc volume decrease
+bindsym XF86AudioRaiseVolume exec $ipc volume increase
+bindsym XF86AudioMute exec $ipc volume muteOutput
+bindsym XF86AudioMicMute exec $ipc volume muteInput
 
 input "type:touchpad" {
     dwt enabled
@@ -267,7 +264,6 @@ input "type:keyboard" {
     xkb_layout us,hu
     xkb_variant ,nodeadkeys
     xkb_options grp:shift_caps_toggle
-    xkb_numlock enable
 }
 
 # Toggle control center
@@ -277,9 +273,8 @@ input "type:keyboard" {
 exec --no-startup-id dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 # Start xdg-desktop-portal services (ensure wlr starts first)
-# For some reason screen sharing in the browser was not working. After a long investigation, these lines had to be commented out.
-# exec --no-startup-id /usr/libexec/xdg-desktop-portal-wlr &
-# exec --no-startup-id /usr/libexec/xdg-desktop-portal -r
+exec --no-startup-id /usr/libexec/xdg-desktop-portal-wlr &
+exec --no-startup-id /usr/libexec/xdg-desktop-portal -r
 
 exec gnome-keyring-daemon --start --components=secrets
 

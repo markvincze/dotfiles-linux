@@ -1,9 +1,9 @@
+#set -x
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
-
 
 export OS="$(uname | tr '[:upper:]' '[:lower:]')"
 
@@ -91,6 +91,9 @@ plugins=(git kubectl docker golang python ssh node)
 
 source $ZSH/oh-my-zsh.sh
 
+## This clashes with the gow CLI tool
+unalias gow
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -147,6 +150,7 @@ alias wolpc="wol 70:85:c2:6f:ab:63"
 alias nvimc='nvim -c "cd ~/.config/nvim" ~/.config/nvim/init.lua'
 alias cdp="cd ~/Workspaces/GitLab/refurbed/platform"
 alias grebm='curr=$(git_current_branch) && git co $(git_main_branch) && git pull && git co $curr && git rebase $(git_main_branch)'
+alias cls=clear
 
 # https://github.com/eza-community/eza
 __is_available eza \
@@ -171,10 +175,15 @@ export PATH=$PATH:~/Tools/protoc/bin
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:~/go/bin
 export PATH=$PATH:~/Tools/golangci-lint/bin
+export PATH=$PATH:~/Tools/google-cloud-sdk/bin
 export PATH=$PATH:~/Tools/zig/zig-x86_64-linux-0.15.2
+export PATH=$PATH:~/Tools/vale
 
 export GOPRIVATE=gitlab.com/refurbed/engineering/*
 export GONOSUMDB=gitlab.com/refurbed/engineering/*
+
+# Completion for eza
+export FPATH="~/Workspaces/GitHub/eza-community/eza/completions/zsh:$FPATH"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -249,13 +258,21 @@ unset -f -m 'fzf_setup_*'
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*"'
 
+#eval "$(starship init zsh)"
+
+[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver
+
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/mark/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc'; fi
 
-#eval "$(starship init zsh)"
-
-[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver
-
+# pnpm
+export PNPM_HOME="/home/mark/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+# pnpm end

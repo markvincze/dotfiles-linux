@@ -3,11 +3,32 @@ return {
   { -- Linting
     'mfussenegger/nvim-lint',
     event = { 'BufReadPre', 'BufNewFile' },
+    -- opts = {
+    --   linters = {
+    --     ['markdownlint'] = {
+    --       args = { '-c', '~/.config/nvim/.markdownlint.json', '--' },
+    --     },
+    --   },
+    -- },
     config = function()
       local lint = require 'lint'
+      -- lint.linters.markdownlint.args = { '-c', '~/.config/nvim/.markdownlint.json', '--' }
+      lint.linters.markdownlint.args = { '-c', '~/.config/nvim/.markdownlint.json', '--stdin' }
       lint.linters_by_ft = {
-        --markdown = { 'markdownlint' },
+        markdown = { 'markdownlint' },
+        -- go = { 'golangcilint' },
+        -- markdown = { 'vale' },
       }
+      --
+      -- local golangcilint = require 'lint.linters.golangcilint'
+      -- golangcilint.append_fname = true
+      -- golangcilint.args = {
+      --   'run',
+      --   '--output.json.path',
+      --   'stdout',
+      --   '--timeout',
+      --   '5m',
+      -- }
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,
       -- instead set linters_by_ft like this:

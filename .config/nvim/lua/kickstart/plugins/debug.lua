@@ -32,11 +32,6 @@ return {
       desc = 'Debug: Start/Continue',
     },
     {
-      '<S-F5>',
-      function() require('dap').close() end,
-      desc = 'Debug: Stop',
-    },
-    {
       '<F11>',
       function() require('dap').step_into() end,
       desc = 'Debug: Step Into',
@@ -45,11 +40,6 @@ return {
       '<F10>',
       function() require('dap').step_over() end,
       desc = 'Debug: Step Over',
-    },
-    {
-      '<C-F10>',
-      function() require('dap').run_to_cursor() end,
-      desc = 'Debug: Run to cursor',
     },
     {
       '<S-F11>',

@@ -412,6 +412,7 @@ require('lazy').setup({
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       local lga_actions = require 'telescope-live-grep-args.actions'
+      local actions = require 'telescope.actions'
 
       require('telescope').setup {
         -- You can put your default mappings / updates / etc. in here
@@ -426,6 +427,11 @@ require('lazy').setup({
           sorting_strategy = 'ascending',
           layout_config = {
             prompt_position = 'top',
+          },
+          mappings = {
+            i = {
+              ['<C-s>'] = actions.select_vertical,
+            },
           },
         },
         pickers = {
@@ -795,6 +801,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         go = { 'gofmt' },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --

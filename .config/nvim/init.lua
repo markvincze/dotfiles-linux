@@ -184,6 +184,8 @@ vim.keymap.set('n', '<C-S-r>', '<cmd>Lazy reload restclient.nvim<CR>')
 vim.keymap.set('n', '<c-i>', '<c-i>')
 vim.keymap.set('n', '<tab>', 'gt')
 
+vim.keymap.set('v', '<F7>', 'y:%s/<C-r><C-r>"//g<Left><Left>')
+
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
 vim.diagnostic.config {
@@ -912,7 +914,9 @@ require('lazy').setup({
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     -- 'folke/tokyonight.nvim',
-    'rebelot/kanagawa.nvim',
+    -- 'rebelot/kanagawa.nvim',
+    -- 'savq/melange-nvim',
+    'bluz71/vim-nightfly-colors',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
       ---@diagnostic disable-next-line: missing-fields
@@ -926,7 +930,9 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-night'
-      vim.cmd.colorscheme 'kanagawa'
+      -- vim.cmd.colorscheme 'kanagawa'
+      -- vim.cmd.colorscheme 'melange'
+      vim.cmd.colorscheme 'nightfly'
     end,
   },
 

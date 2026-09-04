@@ -70,7 +70,8 @@ output "DVI-D-1" {
 # your displays after another 300 seconds, and turn your screens back on when
 # resumed. It will also lock your screen before your computer goes to sleep.
 
-set $ipc qs -c noctalia-shell ipc call
+# set $ipc qs -c noctalia-shell ipc call
+set $ipc noctalia msg
 
 ### Key bindings
 #
@@ -78,6 +79,7 @@ set $ipc qs -c noctalia-shell ipc call
 #
     # Start a terminal
     bindsym $mod+Return exec $term
+    #bindsym Ctrl+space exec handy --toggle-transcription
 
     # Kill focused window
     bindsym $mod+Shift+q kill
@@ -227,17 +229,17 @@ bindsym $mod+r mode "resize"
 bindsym $mod+Semicolon exec ~/Tools/wofi-emoji
 
 # Noctalia controls
-bindsym $mod+d exec $ipc launcher toggle
-bindsym $mod+alt+l exec $ipc lockScreen lock
-bindsym Ctrl+Mod1+Delete exec $ipc sessionMenu toggle
+bindsym $mod+d exec $ipc panel-toggle launcher
+bindsym $mod+alt+l exec $ipc session lock
+bindsym Ctrl+Mod1+Delete exec $ipc panel-toggle session
 
 # Brightness and volume control (this is needed because the default sway config was sending unneeded notifications.
-bindsym XF86MonBrightnessDown exec $ipc brightness decrease
-bindsym XF86MonBrightnessUp exec $ipc brightness increase
+bindsym --locked XF86MonBrightnessDown exec $ipc brightness-down
+bindsym --locked XF86MonBrightnessUp exec $ipc brightness-up
 
-bindsym XF86AudioLowerVolume exec $ipc volume decrease
-bindsym XF86AudioRaiseVolume exec $ipc volume increase
-bindsym XF86AudioMute exec $ipc volume muteOutput
+bindsym --locked XF86AudioRaiseVolume exec $ipc volume-up
+bindsym --locked XF86AudioLowerVolume exec $ipc volume-down
+bindsym --locked XF86AudioMute exec $ipc volume-mute
 bindsym XF86AudioMicMute exec $ipc volume muteInput
 
 input "type:touchpad" {
@@ -264,6 +266,7 @@ input "type:keyboard" {
     xkb_layout us,hu
     xkb_variant ,nodeadkeys
     xkb_options grp:shift_caps_toggle
+    xkb_numlock enabled
 }
 
 # Toggle control center
@@ -282,7 +285,8 @@ exec gnome-keyring-daemon --start --components=secrets
 # Notification Daemon
 #exec swaync
 
-exec qs -c noctalia-shell
+#exec qs -c noctalia-shell
+exec noctalia
 
     #set $ws1 "1 Chat 💬"
     #set $ws2 "2 Browser 🌎"

@@ -48,12 +48,11 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
-theme = Night Owl
 #theme = everforest-dark
 # theme = Ayu Light
 
 working-directory = ~/Workspaces
-background-opacity = 0.9
+background-opacity = 0.95
 #background-blur = 20
 cursor-style = block
 shell-integration-features = no-cursor

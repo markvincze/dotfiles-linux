@@ -51,6 +51,31 @@ input "type:touchpad" {
 
 exec noctalia
 
+### Colorscheme
+
+# Everforest colors
+#set $bg0  #2d353b
+#set $bg1  #343f44
+#set $fg   #d3c6aa
+#set $green #a7c080
+#set $blue  #7fbbb3
+#set $yellow #dbbc7f
+#set $gray  #868d80
+
+# Pastel TTY Colors
+#set $bg0    #282828
+#set $bg1    #323232
+#set $fg     #e0e0e0
+#set $green  #b5e8a9
+#set $blue   #a5d8ff
+#set $yellow #ffe6a7
+#set $gray   #a0a0a0
+#set $red    #ff9a9e
+#set $magenta #dda0dd
+#set $cyan   #a3e8e8
+#set $white  #ffffff
+#set $orange #ffbb8a
+
 set $bg0    #282828
 set $bg1    #3c3836
 set $fg     #ebdbb2
@@ -75,8 +100,33 @@ set $left h
 set $down j
 set $up k
 set $right l
+# Your preferred application launcher
+# Note: pass the final command to swaymsg so that the resulting window can be opened
+# on the original workspace that the command was run on.
+# Recommends: rofi-wayland
+# set $rofi_cmd rofi \
+#         -terminal '$term'
+# Shows a combined list of the applications with desktop files and
+# executables from PATH.
+# TODO: add window with the next release of rofi-wayland
+#set $menu $rofi_cmd -theme solarized -icon-theme "Papirus" -show-icons -show combi -combi-modes drun#run -modes combi
+# set $menu rofi -show drun
+#set $menu wmenu-run
 
 set $file-manager nemo
+
+### Output configuration
+#
+# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+# Requires: desktop-backgrounds-compat, swaybg, jxl-pixbuf-loader
+#output * bg ~/.config/sway/backgrounds/sheng-hu-77-5h7dxgPI-unsplash.jpg fill
+# output * bg ~/.config/sway/backgrounds/deep-doshi-A-k7E3u0-Gc-unsplash.jpg fill
+#
+# Example configuration:
+#
+#   output HDMI-A-1 resolution 1920x1080 position 1920,0
+#
+# You can get the names of your outputs by running: swaymsg -t get_outputs
 
 ### Idle configuration
 #

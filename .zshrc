@@ -24,9 +24,9 @@ function __is_available {
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 # ZSH_THEME="lambda-gitster"
-# ZSH_THEME="pi"
+ZSH_THEME="pi"
 # ZSH_THEME="geometry"
-ZSH_THEME="agnoster"
+# ZSH_THEME="agnoster"
 # ZSH_THEME="headline"
 
 # Set list of themes to pick from when loading at random
@@ -218,6 +218,3 @@ if [ -f '/home/mark/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/home/mark/T
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc'; fi
-
-[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver
-

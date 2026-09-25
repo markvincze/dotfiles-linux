@@ -1,4 +1,3 @@
-#set -x
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
@@ -24,8 +23,11 @@ function __is_available {
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-# ZSH_THEME="robbyrussell"
+# ZSH_THEME="lambda-gitster"
+# ZSH_THEME="pi"
+# ZSH_THEME="geometry"
 ZSH_THEME="agnoster"
+# ZSH_THEME="headline"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -87,12 +89,9 @@ ZSH_THEME="agnoster"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git kubectl docker golang python ssh node)
+plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
-
-## This clashes with the gow CLI tool
-unalias gow
 
 # User configuration
 
@@ -101,12 +100,25 @@ unalias gow
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='nvim'
-# fi
+#Preferred editor for local and remote sessions
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='vim'
+else
+  export EDITOR='nvim'
+fi
+
+bindkey '^H' backward-kill-word
+bindkey  "^[[H"   beginning-of-line
+bindkey  "^[[F"   end-of-line
+
+export PATH=$PATH:/usr/local/go/bin
+export PATH="$PATH:$(go env GOPATH)/bin"
+export PATH=$PATH:~/Tools
+export PATH=$PATH:~/Tools/protoc/bin
+export PATH=$PATH:~/Tools/golangci-lint/bin
+
+export GOPRIVATE=gitlab.com/refurbed/engineering/*
+export GONOSUMDB=gitlab.com/refurbed/engineering/*
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
@@ -122,40 +134,37 @@ unalias gow
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-# HSTR configuration - add this to ~/.zshrc
-alias hh=hstr                    # hh to be alias for hstr
-setopt histignorespace           # skip cmds w/ leading space from history
-export HSTR_CONFIG=hicolor       # get more colors
-export HSTR_CONFIG=raw-history-view
-hstr_no_tiocsti() {
-    zle -I
-    { HSTR_OUT="$( { </dev/tty hstr ${BUFFER}; } 2>&1 1>&3 3>&- )"; } 3>&1;
-    BUFFER="${HSTR_OUT}"
-    CURSOR=${#BUFFER}
-    zle redisplay
-}
-zle -N hstr_no_tiocsti
-bindkey '\C-r' hstr_no_tiocsti
-export HSTR_TIOCSTI=n
-
 alias zshc="nvim ~/.zshrc"
 alias swayc="nvim ~/.config/sway/config"
-alias ghosttyc="nvim ~/.config/ghostty/config"
-alias sshpc="ssh mark@192.168.0.4"
+alias ghosttyc="nvim ~/.config/ghostty/config.ghostty"
+alias cdp="cd ~/Workspaces/GitLab/refurbed/platform"
 alias dpss="docker ps --format \"table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.State}}\""
 alias k=kubectl
 alias wolpc="wol 70:85:c2:6f:ab:63"
-#alias nvimc="nvim ~/.config/nvim/init.lua"
 alias nvimc='nvim -c "cd ~/.config/nvim" ~/.config/nvim/init.lua'
-alias cdp="cd ~/Workspaces/GitLab/refurbed/platform"
 alias grebm='curr=$(git_current_branch) && git co $(git_main_branch) && git pull && git co $curr && git rebase $(git_main_branch)'
 alias cls=clear
+alias pacman-full-updaet='pacman -Syu'
+
+function refb_db_proxy {
+  project="${1}"
+  db_name="${2}"
+
+  # while true
+  #   do
+  gcloud pam grants create --location=global --project=${project} --entitlement=grant-platform-database-access --requested-duration=1800s --justification="I need to check the addon configuration" || true
+      # timeout 1800s
+  cloud-sql-proxy ${project}:europe-west3:${db_name} --port 2222 --auto-iam-authn
+    # done
+}
+
+alias dbprev='refb_db_proxy refb-platform-preview platform-8f4c-15'
+alias dbprod='refb_db_proxy refb-platform-production platform-19af-15'
 
 # https://github.com/eza-community/eza
 __is_available eza \
 && alias ls='eza  --time-style=relative --git --octal-permissions --icons \
-  --color=auto --binary -lg' \
+  --color=auto --binary -lag' \
 && alias ll='eza  --time-style=long-iso --git --octal-permissions --icons \
   --color=auto --binary -la' \
 && alias la='eza  --time-style=long-iso --git --octal-permissions         \
@@ -166,22 +175,6 @@ __is_available eza \
   --color=auto --binary -las modified' \
 && alias l1='eza  -1 --icons=never --color=auto'
 
-# Make ctrl+backspace delete a hole word
-bindkey '^H' backward-kill-word
-
-export PATH=$PATH:~/.local/bin
-export PATH=$PATH:~/Tools
-export PATH=$PATH:~/Tools/protoc/bin
-export PATH=$PATH:/usr/local/go/bin
-export PATH=$PATH:~/go/bin
-export PATH=$PATH:~/Tools/golangci-lint/bin
-export PATH=$PATH:~/Tools/google-cloud-sdk/bin
-export PATH=$PATH:~/Tools/zig/zig-x86_64-linux-0.15.2
-export PATH=$PATH:~/Tools/vale
-
-export GOPRIVATE=gitlab.com/refurbed/engineering/*
-export GONOSUMDB=gitlab.com/refurbed/engineering/*
-
 # Completion for eza
 export FPATH="~/Workspaces/GitHub/eza-community/eza/completions/zsh:$FPATH"
 
@@ -189,79 +182,36 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-[ -z "$SSH_AGENT_PID" ] &&
-export SSH_AGENT_PID=$(ps ux | grep -w ssh-agent | grep -vwE 'defunct|grep' | grep -wm1 "$SSH_AUTH_SOCK" | awk '{print $2}')
+echo "Checking to start ssh-agent"
+# Start ssh-agent if it's not running yet.
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    echo "ssh-agent is not running, starting"
+    ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
+    #ssh-add ~/.ssh/id_ed25519 2>/dev/null
+    ssh-add ~/.ssh/id_ed25519
+fi
+if [ ! -f "$SSH_AUTH_SOCK" ]; then
+    echo "Doing some ssh-agent env stuff"
+    source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
+fi
 
-[ -n "$SSH_AGENT_PID" ] && [ -z "$SSH_AUTH_SOCK" ] &&
-export SSH_AUTH_SOCK=$( (ps "$SSH_AGENT_PID" | grep -w -- '-a' | sed "s/.* -a //;s/ .*//" | grep -- /) || (find /tmp/ssh-* -name \*$(($SSH_AGENT_PID-1)) -o -name \*$(($SSH_AGENT_PID-2)) -type s 2> /dev/null) )
-
-( [ -z "$SSH_AGENT_PID" ] || [ -z "$SSH_AUTH_SOCK" ] ) &&
-eval $(ssh-agent $([ -n "$SSH_AUTH_SOCK" ] && rm -f "$SSH_AUTH_SOCK" && echo -n "-a $SSH_AUTH_SOCK") -s) 1> /dev/null
-
-ssh-add ~/.ssh/id_ed25519 2>/dev/null
-#
-### Change terminal background color whether in active SSH session or not
-# Function to set background
-function set_bg() {
-    printf "\033]11;%s\007" "$1"
+# HSTR configuration - add this to ~/.zshrc
+alias hh=hstr                    # hh to be alias for hstr
+setopt histignorespace           # skip cmds w/ leading space from history
+export HSTR_CONFIG=hicolor       # get more colors
+export HSTR_CONFIG=raw-history-view
+hstr_no_tiocsti() {
+    zle -I
+    { HSTR_OUT="$( { </dev/tty hstr -- ${BUFFER}; } 2>&1 1>&3 3>&- )"; } 3>&1;
+    BUFFER="${HSTR_OUT}"
+    CURSOR=${#BUFFER}
+    zle redisplay
 }
+zle -N hstr_no_tiocsti
+bindkey '\C-r' hstr_no_tiocsti
+export HSTR_TIOCSTI=n
 
-# Function to get current background (if supported)
-function get_bg() {
-    # Use default fallback if detection fails
-    echo "${CURRENT_BG:-#1e1e2e}"
-}
-
-# Wrapper for ssh
-function ssh() {
-    # Save current background dynamically
-    DEFAULT_BG="#011627"
-    CURRENT_BG="$DEFAULT_BG"  # fallback in case detection fails
-
-    # Try to read current background via escape sequence
-    # Some terminals (like Terminator) may not report it, so fallback is used
-    # You could manually override DEFAULT_BG if you know your usual color
-
-    # Change to SSH background
-    set_bg "#330000"
-
-    # Run actual ssh
-    command ssh "$@"
-
-    # Restore original background
-    set_bg "$(get_bg)"
-}
-
-#source <(fzf --zsh)
-function fzf_setup_using_fzf() {
-  (( ${+commands[fzf]} )) || return 1
-
-  local fzf_ver=${"$(fzf --version)"#fzf }
-
-  autoload -Uz is-at-least
-  is-at-least 0.48.0 ${${(s: :)fzf_ver}[1]} || return 1
-
-  eval "$(fzf --zsh)"
-}
-
-function fzf_setup_error() {
-  cat >&2 <<'EOF'
-fzf plugin: Cannot find fzf installation directory.
-Please add `export FZF_BASE=/path/to/fzf/install/dir` to your .zshrc
-EOF
-}
-
-fzf_setup_using_fzf \
-  || fzf_setup_error
-
-unset -f -m 'fzf_setup_*'
-
-export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*"'
-
-#eval "$(starship init zsh)"
-
-[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver
-
+. "$HOME/.local/bin/env"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/mark/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/path.zsh.inc'; fi
@@ -269,10 +219,5 @@ if [ -f '/home/mark/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/home/mark/T
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/completion.zsh.inc'; fi
 
-# pnpm
-export PNPM_HOME="/home/mark/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME/bin:"*) ;;
-  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
-esac
-# pnpm end
+[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver
+

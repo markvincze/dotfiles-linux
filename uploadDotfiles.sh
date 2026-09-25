@@ -18,6 +18,6 @@ rm -rf ./.config/nvim/.git
 cp ~/.zshrc .
 
 git add .
-git commit --allow-empty -m "Update config $(hostname)"
+git commit --allow-empty -m "Update config (from $(hostname))"
 git push origin main
 

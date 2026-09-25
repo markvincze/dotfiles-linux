@@ -24,9 +24,9 @@ function __is_available {
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 # ZSH_THEME="lambda-gitster"
-ZSH_THEME="pi"
+# ZSH_THEME="pi"
 # ZSH_THEME="geometry"
-# ZSH_THEME="agnoster"
+ZSH_THEME="agnoster"
 # ZSH_THEME="headline"
 
 # Set list of themes to pick from when loading at random
@@ -212,6 +212,9 @@ bindkey '\C-r' hstr_no_tiocsti
 export HSTR_TIOCSTI=n
 
 . "$HOME/.local/bin/env"
+
+[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver
+
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/mark/Tools/google-cloud-sdk/path.zsh.inc' ]; then . '/home/mark/Tools/google-cloud-sdk/path.zsh.inc'; fi
